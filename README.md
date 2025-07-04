@@ -15,7 +15,7 @@ Copy and adapt this JSON file:
             "command": "python",
             "args": [
                 "openmost-mcp-client.py",
-                "https://matomo-mcp.openmost.io",
+                "https://matomo-mcp.openmost.io/mcp",
                 "YOUR_OPENMOST_MCP_TOKEN",
                 "https://matomo.example.com",
                 "matomo_token_auth_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
