@@ -62,7 +62,7 @@ You can adapt the paths, tokens, and URLs to fit your environment.
     "openmost-matomo-mcp": {
       "command": "node",
       "args": [
-        "C:/wamp64/www/matomo-mcp-client/matomo-mcp-client.js",
+        "absolute/path/to/matomo-mcp-client.js",
         "--url=https://matomo-mcp.openmost.io"
       ],
       "env": {
