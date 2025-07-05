@@ -66,7 +66,7 @@ You can adapt the paths, tokens, and URLs to fit your environment.
         "--url=https://matomo-mcp.openmost.io"
       ],
       "env": {
-        "OPENMOST_MCP_TOKEN": "your_openmost_mcp_token",
+        "OPENMOST_MCP_TOKEN": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         "MATOMO_HOST": "https://matomo.example.com",
         "MATOMO_TOKEN_AUTH": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       }
@@ -76,7 +76,7 @@ You can adapt the paths, tokens, and URLs to fit your environment.
 ```
 
 ✅ Replace:
-- `OPENMOST_MCP_TOKEN` with the token you obtained from Openmost.
+- `OPENMOST_MCP_TOKEN` with the token you got from Openmost (ronan@openmost.io).
 - `MATOMO_HOST` with the URL of your Matomo instance.
 - `MATOMO_TOKEN_AUTH` with your Matomo API token.
 
