@@ -1,27 +1,60 @@
-## Clone this repo anywhere on your PC
 
-```shell
+# Openmost Matomo MCP Client
+
+## 📋 Description
+
+This repository contains the **client for the Openmost Matomo MCP server**.  
+It enables you to connect Claude AI Desktop (or any other LLM that supports [MCP — Model Context Protocol](https://github.com/modelcontext/protocol)) to a [Matomo](https://matomo.org/) analytics instance, via the Openmost MCP server.
+
+You need to install and configure this client to act as a bridge between your Claude Desktop app and your Matomo analytics data.
+
+---
+
+## 🚀 Installation
+
+### 1️⃣ Clone the repository
+
+```bash
 git clone https://github.com/openmost/matomo-mcp-client
+cd matomo-mcp-client
 ```
 
-```shell
+### 2️⃣ Install dependencies
+
+```bash
 npm install
 ```
 
-## Register new MCP server for Claude Desktop
+---
 
-Add the following code to `claude_desktop_config.json`.
+## 🔧 Configuration
 
-> For you first MCP server, you might have to create the file.
-> 
-> This file should be located here :
->
-> - Windows : `C:\Users\YourName\AppData\Roaming\ClaudeDesktop\claude_desktop_config.json`
-> - Linux : `~/.config/claude_desktop/claude_desktop_config.json`
-> - macOS : `~/Library/Application Support/ClaudeDesktop/claude_desktop_config.json`
+### Register the MCP client in Claude Desktop
 
+You need to tell Claude Desktop about this MCP client by editing its configuration file.
 
-Copy and adapt this JSON file:
+#### 📄 Location of the configuration file
+
+You must add your MCP server config into the file:
+
+`claude_desktop_config.json`
+
+If it does not exist yet, you can create it.
+
+Depending on your operating system, the file should be placed at:
+
+| OS       | Path                                                                     |
+|----------|--------------------------------------------------------------------------|
+| **Windows** | `C:\Users\your-name\AppData\Roaming\Claude\claude_desktop_config.json`   |
+| **Linux**   | `~/.config/claude_desktop/claude_desktop_config.json`                    |
+| **macOS**   | `~/Library/Application Support/ClaudeDesktop/claude_desktop_config.json` |
+
+---
+
+### 📝 Example configuration
+
+Below is an example of how to register the Openmost Matomo MCP client in `claude_desktop_config.json`.  
+You can adapt the paths, tokens, and URLs to fit your environment.
 
 ```json
 {
@@ -42,6 +75,33 @@ Copy and adapt this JSON file:
 }
 ```
 
-Restart Claude completely.
+✅ Replace:
+- `OPENMOST_MCP_TOKEN` with the token you obtained from Openmost.
+- `MATOMO_HOST` with the URL of your Matomo instance.
+- `MATOMO_TOKEN_AUTH` with your Matomo API token.
 
-Enjoy.
+---
+
+### 🔄 Restart Claude Desktop
+
+After saving the configuration file, completely quit and restart Claude Desktop for the changes to take effect.
+
+---
+
+## 🎉 Usage
+
+Once everything is configured and Claude has restarted:
+- Open Claude Desktop.
+- In the model selector, choose the MCP server named:  
+  **`openmost-matomo-mcp`**
+- Start interacting!  
+  Your requests will now be processed through the Matomo MCP client and served by your Matomo analytics data.
+
+---
+
+## 📖 Resources
+
+- [Openmost](https://openmost.io)
+- [Matomo Analytics](https://matomo.org)
+- [Claude Desktop](https://claude.ai/download)
+- [MCP Protocol](https://github.com/modelcontext/protocol)
