@@ -1,0 +1,10 @@
+{
+  "name": "matomo-mcp-client",
+  "version": "1.0.0",
+  "main": "matomo-mcp-client.js",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.0",
+    "node-fetch": "^3.3.2"
+  }
+}
