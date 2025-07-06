@@ -63,22 +63,15 @@ You can adapt the paths, tokens, and URLs to fit your environment.
       "command": "node",
       "args": [
         "absolute/path/to/matomo-mcp-client.js",
-        "--url=https://matomo-mcp.openmost.io"
-      ],
-      "env": {
-        "OPENMOST_MCP_TOKEN": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        "MATOMO_HOST": "https://matomo.example.com",
-        "MATOMO_TOKEN_AUTH": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-      }
+        "--url=https://matomo-mcp.openmost.io",
+        "--matomo-host=https://matomo.example.com",
+        "--matomo-token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "--openmost-token=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      ]
     }
   }
 }
 ```
-
-✅ Replace:
-- `OPENMOST_MCP_TOKEN` with the token you got from Openmost (ronan@openmost.io).
-- `MATOMO_HOST` with the URL of your Matomo instance.
-- `MATOMO_TOKEN_AUTH` with your Matomo API token.
 
 ---
 
