@@ -90,6 +90,7 @@ Once everything is configured and Claude has restarted:
 - Start interacting!  
   Your requests will now be processed through the Matomo MCP client and served by your Matomo analytics data.
 
+
 ---
 
 ## 📖 Resources
@@ -98,3 +99,4 @@ Once everything is configured and Claude has restarted:
 - [Matomo Analytics](https://matomo.org)
 - [Claude Desktop](https://claude.ai/download)
 - [MCP Protocol](https://github.com/modelcontext/protocol)
+

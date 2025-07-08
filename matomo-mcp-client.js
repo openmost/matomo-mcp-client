@@ -2,7 +2,7 @@
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema, ListPromptsRequestSchema, GetPromptRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import fetch from 'node-fetch';
 
 // Configuration depuis les arguments ou variables d'environnement
@@ -81,13 +81,20 @@ console.error('🔷 Client configuration:', {
 
 const server = new Server(
     { name: 'matomo-mcp-client', version: '1.0.0' },
-    { capabilities: { tools: {} } }
+    {
+        capabilities: {
+            tools: {},      // Enable tools capability
+            prompts: {}     // Enable prompts capability
+        }
+    }
 );
 
-// Cache pour éviter les appels répétés à tools/list
+// Cache pour éviter les appels répétés
 let toolsCache = null;
 let toolsCacheTime = 0;
-const TOOLS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let promptsCache = null;
+let promptsCacheTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /**
  * Appel au serveur distant avec retry et timeout
@@ -212,15 +219,19 @@ async function testServerConnection() {
     }
 }
 
+// ============================================================================
+// TOOLS HANDLERS
+// ============================================================================
+
 // Handler pour lister les outils avec cache
 server.setRequestHandler(ListToolsRequestSchema, async (request) => {
-    const requestId = `list-${Date.now()}`;
+    const requestId = `list-tools-${Date.now()}`;
     console.error(`📋 [${requestId}] Listing tools...`);
 
     try {
         // Vérifier le cache
         const now = Date.now();
-        if (toolsCache && (now - toolsCacheTime) < TOOLS_CACHE_TTL) {
+        if (toolsCache && (now - toolsCacheTime) < CACHE_TTL) {
             console.error(`📋 [${requestId}] Using cached tools list`);
             return { tools: toolsCache };
         }
@@ -247,7 +258,7 @@ server.setRequestHandler(ListToolsRequestSchema, async (request) => {
 // Handler pour appeler un outil
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
-    const requestId = `call-${name}-${Date.now()}`;
+    const requestId = `call-tool-${name}-${Date.now()}`;
 
     console.error(`🔧 [${requestId}] Calling tool: ${name}`);
     console.error(`🔧 [${requestId}] Arguments:`, JSON.stringify(args, null, 2));
@@ -272,12 +283,75 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 });
 
+// ============================================================================
+// PROMPTS HANDLERS
+// ============================================================================
+
+// Handler pour lister les prompts avec cache
+server.setRequestHandler(ListPromptsRequestSchema, async (request) => {
+    const requestId = `list-prompts-${Date.now()}`;
+    console.error(`📝 [${requestId}] Listing prompts...`);
+
+    try {
+        // Vérifier le cache
+        const now = Date.now();
+        if (promptsCache && (now - promptsCacheTime) < CACHE_TTL) {
+            console.error(`📝 [${requestId}] Using cached prompts list`);
+            return { prompts: promptsCache };
+        }
+
+        const response = await callRemoteServer('prompts/list', {}, requestId);
+
+        if (response.error) {
+            throw new Error(response.error.message || 'Unknown error from server');
+        }
+
+        // Mise à jour du cache
+        promptsCache = response.prompts || response.result?.prompts || [];
+        promptsCacheTime = now;
+
+        console.error(`📝 [${requestId}] Found ${promptsCache.length} prompts`);
+        return { prompts: promptsCache };
+
+    } catch (error) {
+        console.error(`❌ [${requestId}] Error listing prompts: ${error.message}`);
+        throw error;
+    }
+});
+
+// Handler pour récupérer un prompt
+server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+    const { name, arguments: args } = request.params;
+    const requestId = `get-prompt-${name}-${Date.now()}`;
+
+    console.error(`📝 [${requestId}] Getting prompt: ${name}`);
+    console.error(`📝 [${requestId}] Arguments:`, JSON.stringify(args, null, 2));
+
+    try {
+        const response = await callRemoteServer('prompts/get', {
+            name,
+            arguments: args
+        }, requestId);
+
+        if (response.error) {
+            throw new Error(response.error.message || 'Unknown error from server');
+        }
+
+        console.error(`📝 [${requestId}] Prompt retrieved successfully`);
+        return response.result;
+
+    } catch (error) {
+        console.error(`❌ [${requestId}] Error getting prompt: ${error.message}`);
+        throw error;
+    }
+});
+
 /**
  * Affichage de l'aide
  */
 function showHelp() {
     console.error(`
-Matomo MCP Client - Proxy to remote Matomo MCP server
+Matomo MCP Client - Proxy to remote Matomo MCP server with Tools & Prompts support
 
 Usage: node client.js [options]
 
@@ -290,6 +364,13 @@ Options:
   --retry=COUNT             Number of retry attempts (default: 3)
   --retry-delay=MS          Initial retry delay in milliseconds (default: 1000)
   --help                    Show this help
+
+Features:
+  ✅ Tools support          Call remote Matomo tools (sites, alerts, reports, etc.)
+  ✅ Prompts support        Access remote prompt templates
+  ✅ Caching               5-minute cache for tools/prompts lists
+  ✅ Retry logic           Exponential backoff for failed requests
+  ✅ Timeout handling      Configurable request timeouts
 
 Environment variables:
   MATOMO_MCP_SERVER_URL     Remote server URL
@@ -322,9 +403,10 @@ async function main() {
         process.exit(1);
     }
 
-    console.error(`🚀 Starting Matomo MCP client`);
+    console.error(`🚀 Starting Matomo MCP client with Tools & Prompts support`);
     console.error(`🌐 Connecting to: ${config.serverUrl}`);
     console.error('🔷 Configuration validated successfully');
+    console.error('🛠️  Capabilities: Tools ✅ | Prompts ✅');
 
     // Test de connectivité optionnel
     if (process.env.NODE_ENV !== 'production') {
@@ -333,7 +415,7 @@ async function main() {
 
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error('✅ Matomo MCP client ready');
+    console.error('✅ Matomo MCP client ready with full Tools & Prompts support');
 }
 
 // Gestion des signaux système
