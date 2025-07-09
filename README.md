@@ -47,7 +47,7 @@ Depending on your operating system, the file should be placed at:
 |----------|--------------------------------------------------------------------------|
 | **Windows** | `C:\Users\your-name\AppData\Roaming\Claude\claude_desktop_config.json`   |
 | **Linux**   | `~/.config/claude_desktop/claude_desktop_config.json`                    |
-| **macOS**   | `~/Library/Application Support/ClaudeDesktop/claude_desktop_config.json` |
+| **macOS**   | `~/Library/Application\ Support/Claude/claude_desktop_config.json` |
 
 ---
 
